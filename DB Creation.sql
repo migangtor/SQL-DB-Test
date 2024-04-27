@@ -1,0 +1,18 @@
+select * from information_schema.tables where table_schema = 'public';
+
+CREATE TABLE employee 
+(
+
+	EMP_ID			INT PRIMARY KEY 
+	,EMP_NAME		VARCHAR(50)	NOT NULL
+	,DEPT_NAME		VARCHAR(50)	NOT NULL
+	,SALARY			INT 
+	, CONSTRAINT SALARY_CSTR CHECK(SALARY >= 0)
+);
+
+SELECT * FROM EMPLOYEE
+
+INSERT INTO EMPLOYEE VALUES (101, 'Mohan', 'Admin', 4000);
+INSERT INTO EMPLOYEE VALUES (108, 'Maryam', 'Admin', 4000);
+INSERT INTO EMPLOYEE VALUES (113, 'Gautham', 'Admin', 2000);
+
