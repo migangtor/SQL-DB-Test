@@ -50,7 +50,8 @@ SELECT *,
 LAG(salary) OVER (PARTITION BY dept_name) as lag,
 LAG(salary,2) OVER (PARTITION BY dept_name) as lag2,
 LAG(salary,2,0) OVER (PARTITION BY dept_name) as lag3,
-LEAD(salary) OVER (PARTITION BY dept_name) as lead
+LEAD(salary) OVER (PARTITION BY dept_name) as lead,
+salary - LAG(salary,1,0) OVER (PARTITION BY dept_name) as  diff_lag
 FROM EMPLOYEE
 
 
