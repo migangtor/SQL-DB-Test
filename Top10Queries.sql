@@ -18,6 +18,14 @@ insert into cars values(7,'Ioniq 6', 'White', 'Hyundai');
 
 select * from cars;
 
+select *
+from(
+	select *, rank() over(partition by model_name, color, brand 
+						 order by model_id) as rank
+	from cars)
+where rank = 1
+
+
 
 --- Q1: Delete duplicate data --- 
 
@@ -51,7 +59,7 @@ create table employee
 (
 	id 			int primary key GENERATED ALWAYS AS IDENTITY,
 	name 		varchar(100),
-	dept 		varchar(100),
+	dept_name	varchar(100),
 	salary 		int
 );
 insert into employee values(default, 'Alexander', 'Admin', 6500);
@@ -72,11 +80,10 @@ select * from employee;
 
 -- Solution:
 select * 
-, max(salary) over(partition by dept order by salary desc) as highest_sal
-, min(salary) over(partition by dept order by salary desc
+, max(salary) over(partition by dept_name order by salary desc) as highest_sal
+, min(salary) over(partition by dept_name order by salary desc
                   range between unbounded preceding and unbounded following) as lowest_sal
-, min(salary) over(partition by dept order by salary asc) as lowest_sal_optb
-
+, min(salary) over(partition by dept_name order by salary asc) as lowest_sal_optb
 from employee;
 
 
@@ -100,10 +107,9 @@ insert into car_travels values ('Car3', 'Day3', 50);
 insert into car_travels values ('Car3', 'Day4', 100);
 
 select * from car_travels;
+
+
 --- **************************************************************************************** ---               
-
-
-
 
 --- Q3 : Find actual distance --- 
 
@@ -116,7 +122,56 @@ from car_travels;
 
 --- **************************************************************************************** ---   
 
+--- Q4 : Convert the given input to expected output --- 
 
+drop table if exists src_dest_distance ;
+create table src_dest_distance
+(
+    source          varchar(20),
+    destination     varchar(20),
+    distance        int
+);
+insert into src_dest_distance values ('Bangalore', 'Hyderbad', 400);
+insert into src_dest_distance values ('Hyderbad', 'Bangalore', 400);
+insert into src_dest_distance values ('Mumbai', 'Delhi', 400);
+insert into src_dest_distance values ('Delhi', 'Mumbai', 400);
+insert into src_dest_distance values ('Chennai', 'Pune', 400);
+insert into src_dest_distance values ('Pune', 'Chennai', 400);
+
+select * from src_dest_distance;
+
+
+
+
+--- Q4 : Convert the given input to expected output. The irigin-destination should not repeat --- 
+
+-- Solution:
+with cte as
+    (select *
+    , row_number() over() as rn
+    from src_dest_distance)
+select t1.source, t1.destination, t1.distance
+from cte t1
+join cte t2
+        on t1.rn < t2.rn
+        and t1.source = t2.destination
+        and t1.destination = t2.source;
+
+--- **************************************************************************************** ---               
+
+
+--- Q5 : Ungroup the given input data --- 
+
+drop table if exists travel_items;
+create table travel_items
+(
+	id              int,
+	item_name       varchar(50),
+	total_count     int
+);
+insert into travel_items values (1, 'Water Bottle', 2);
+insert into travel_items values (2, 'Tent', 1);
+insert into travel_items values (3, 'Apple', 4);
 
 
 
